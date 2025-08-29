@@ -1,6 +1,7 @@
 import { Image } from 'expo-image';
+import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 type Character = {
   id: number;
@@ -13,6 +14,7 @@ export default function HomeScreen() {
   const [characters, setCharacters] = useState<Character[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [errorMessage, setErrorMessage] = useState<string>('');
+  const router = useRouter();
 
   useEffect(() => {
     let isMounted = true;
@@ -57,21 +59,28 @@ export default function HomeScreen() {
           keyExtractor={(item) => String(item.id)}
           contentContainerStyle={{ gap: 12, padding: 16 }}
           renderItem={({ item }) => (
-            <View style={styles.card}>
-              <Image
-                source={{ uri: item.image }}
-                style={styles.image}
-                contentFit="cover"
-              />
-              <View style={styles.info}>
-                <Text style={styles.name} numberOfLines={1}>
-                  {item.name}
-                </Text>
-                <Text style={styles.species} numberOfLines={1}>
-                  {item.species}
-                </Text>
+            <TouchableOpacity
+              onPress={() =>
+                router.push({ pathname: '/character/[id]', params: { id: String(item.id) } })
+              }
+              activeOpacity={0.7}
+            >
+              <View style={styles.card}>
+                <Image
+                  source={{ uri: item.image }}
+                  style={styles.image}
+                  contentFit="cover"
+                />
+                <View style={styles.info}>
+                  <Text style={styles.name} numberOfLines={1}>
+                    {item.name}
+                  </Text>
+                  <Text style={styles.species} numberOfLines={1}>
+                    {item.species}
+                  </Text>
+                </View>
               </View>
-            </View>
+            </TouchableOpacity>
           )}
         />
       )}
