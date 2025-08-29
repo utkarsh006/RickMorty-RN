@@ -1,6 +1,7 @@
 import { Character } from '@/types/character';
 import { Image } from 'expo-image';
-import { StyleSheet, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
+import { styles } from './CharacterCard.styles';
 
 type Props = {
   character: Pick<Character, 'name' | 'species' | 'image'>;
@@ -20,33 +21,4 @@ export function CharacterCard({ character }: Props) {
       </View>
     </View>
   );
-}
-
-const styles = StyleSheet.create({
-  card: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: '#ddd',
-  },
-  image: {
-    width: 96,
-    height: 96,
-  },
-  info: {
-    flex: 1,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-  },
-  name: {
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  species: {
-    color: 'gray',
-    marginTop: 4,
-  },
-}); 
+} 

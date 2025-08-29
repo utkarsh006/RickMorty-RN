@@ -1,5 +1,6 @@
 import { Episode } from '@/types/character';
-import { StyleSheet, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
+import { styles } from './EpisodeListItem.styles';
 
 type Props = {
   episode: Episode;
@@ -12,21 +13,4 @@ export function EpisodeListItem({ episode }: Props) {
       <Text style={styles.episodeMeta}>{episode.air_date}</Text>
     </View>
   );
-}
-
-const styles = StyleSheet.create({
-  episodeCard: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 12,
-    borderWidth: 1,
-    borderColor: '#ddd',
-  },
-  episodeTitle: {
-    fontWeight: '600',
-  },
-  episodeMeta: {
-    marginTop: 4,
-    color: 'gray',
-  },
-}); 
+} 
