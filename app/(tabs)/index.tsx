@@ -1,14 +1,9 @@
-import { Image } from 'expo-image';
+import { CharacterCard } from '@/components/CharacterCard';
+import { fetchCharacters } from '@/services/rickAndMorty';
+import { Character } from '@/types/character';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-
-type Character = {
-  id: number;
-  name: string;
-  species: string;
-  image: string;
-};
 
 export default function HomeScreen() {
   const [characters, setCharacters] = useState<Character[]>([]);
@@ -19,26 +14,18 @@ export default function HomeScreen() {
   useEffect(() => {
     let isMounted = true;
 
-    const fetchCharacters = async () => {
+    const load = async () => {
       try {
-        const response = await fetch('https://rickandmortyapi.com/api/character');
-        const data = await response.json();
-        if (isMounted) {
-          setCharacters(data?.results ?? []);
-        }
-      } catch (error) {
-        if (isMounted) {
-          setErrorMessage('Failed to load characters');
-        }
+        const data = await fetchCharacters();
+        if (isMounted) setCharacters(data);
+      } catch (e) {
+        if (isMounted) setErrorMessage('Failed to load characters');
       } finally {
-        if (isMounted) {
-          setIsLoading(false);
-        }
+        if (isMounted) setIsLoading(false);
       }
     };
 
-    fetchCharacters();
-
+    load();
     return () => {
       isMounted = false;
     };
@@ -60,26 +47,10 @@ export default function HomeScreen() {
           contentContainerStyle={{ gap: 12, padding: 16 }}
           renderItem={({ item }) => (
             <TouchableOpacity
-              onPress={() =>
-                router.push({ pathname: '/character/[id]', params: { id: String(item.id) } })
-              }
+              onPress={() => router.push({ pathname: '/character/[id]', params: { id: String(item.id) } })}
               activeOpacity={0.7}
             >
-              <View style={styles.card}>
-                <Image
-                  source={{ uri: item.image }}
-                  style={styles.image}
-                  contentFit="cover"
-                />
-                <View style={styles.info}>
-                  <Text style={styles.name} numberOfLines={1}>
-                    {item.name}
-                  </Text>
-                  <Text style={styles.species} numberOfLines={1}>
-                    {item.species}
-                  </Text>
-                </View>
-              </View>
+              <CharacterCard character={{ name: item.name, species: item.species, image: item.image }} />
             </TouchableOpacity>
           )}
         />
@@ -106,31 +77,5 @@ const styles = StyleSheet.create({
     color: 'red',
     textAlign: 'center',
     marginTop: 20,
-  },
-  card: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: '#ddd',
-  },
-  image: {
-    width: 96,
-    height: 96,
-  },
-  info: {
-    flex: 1,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-  },
-  name: {
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  species: {
-    color: 'gray',
-    marginTop: 4,
   },
 });

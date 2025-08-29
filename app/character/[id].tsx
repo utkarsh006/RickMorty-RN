@@ -1,27 +1,10 @@
+import { EpisodeListItem } from '@/components/EpisodeListItem';
+import { fetchCharacterById, fetchEpisodesByUrls } from '@/services/rickAndMorty';
+import { Character, Episode } from '@/types/character';
 import { Image } from 'expo-image';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
-
-type Character = {
-  id: number;
-  name: string;
-  status: string;
-  species: string;
-  type: string;
-  gender: string;
-  origin: { name: string; url: string };
-  location: { name: string; url: string };
-  image: string;
-  episode: string[];
-};
-
-type Episode = {
-  id: number;
-  name: string;
-  air_date: string;
-  episode: string;
-};
 
 export default function CharacterDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -34,25 +17,14 @@ export default function CharacterDetailScreen() {
   useEffect(() => {
     let isMounted = true;
 
-    const fetchAll = async () => {
+    const load = async () => {
       try {
-        const charRes = await fetch(`https://rickandmortyapi.com/api/character/${id}`);
-        const charData: Character = await charRes.json();
+        const data = await fetchCharacterById(id);
         if (!isMounted) return;
-        setCharacter(charData);
-
-        if (charData.episode.length) {
-          const idsCsv = charData.episode
-            .map((url) => url.split('/').pop() || '')
-            .filter(Boolean)
-            .join(',');
-          const epRes = await fetch(`https://rickandmortyapi.com/api/episode/${idsCsv}`);
-          const epData = await epRes.json();
-          if (!isMounted) return;
-          setEpisodes(Array.isArray(epData) ? epData : [epData]);
-        } else {
-          setEpisodes([]);
-        }
+        setCharacter(data);
+        const eps = await fetchEpisodesByUrls(data.episode);
+        if (!isMounted) return;
+        setEpisodes(eps);
       } catch (e) {
         if (isMounted) setErrorMessage('Failed to load character');
       } finally {
@@ -60,7 +32,7 @@ export default function CharacterDetailScreen() {
       }
     };
 
-    fetchAll();
+    load();
     return () => {
       isMounted = false;
     };
@@ -105,10 +77,7 @@ export default function CharacterDetailScreen() {
           contentContainerStyle={{ padding: 16, paddingBottom: 24 }}
           ItemSeparatorComponent={() => <View style={styles.separator} />}
           renderItem={({ item }) => (
-            <View style={styles.episodeCard}>
-              <Text style={styles.episodeTitle}>{item.episode} · {item.name}</Text>
-              <Text style={styles.episodeMeta}>{item.air_date}</Text>
-            </View>
+            <EpisodeListItem episode={item} />
           )}
           ListEmptyComponent={<Text style={styles.muted}>No episodes found.</Text>}
         />
@@ -186,19 +155,5 @@ const styles = StyleSheet.create({
   },
   separator: {
     height: 12,
-  },
-  episodeCard: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 12,
-    borderWidth: 1,
-    borderColor: '#ddd',
-  },
-  episodeTitle: {
-    fontWeight: '600',
-  },
-  episodeMeta: {
-    marginTop: 4,
-    color: 'gray',
   },
 }); 
