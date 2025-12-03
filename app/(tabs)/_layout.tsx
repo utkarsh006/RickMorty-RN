@@ -1,29 +1,38 @@
 import { Tabs } from 'expo-router';
-import React from 'react';
-import { Platform } from 'react-native';
+import React, { useMemo } from 'react';
+import { Platform, View } from 'react-native';
 
 import { HapticTab } from '@/components/HapticTab';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import TabBarBackground from '@/components/ui/TabBarBackground';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import { Colors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme';
+import { useGlobalTheme } from '@/hooks/useGlobalTheme';
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
+  const { isDark } = useGlobalTheme();
+  const colors = useMemo(() => isDark ? Colors.dark : Colors.light, [isDark]);
 
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerShown: false,
+        tabBarActiveTintColor: colors.tint,
+        tabBarInactiveTintColor: colors.tabIconDefault,
+        headerShown: true,
         tabBarButton: HapticTab,
         tabBarBackground: TabBarBackground,
+        headerStyle: {
+          backgroundColor: colors.background,
+        },
+        headerTintColor: colors.text,
         tabBarStyle: Platform.select({
           ios: {
-            // Use a transparent background on iOS to show the blur effect
             position: 'absolute',
           },
-          default: {},
+          default: {
+            backgroundColor: colors.background,
+            borderTopColor: colors.border,
+          },
         }),
       }}>
       <Tabs.Screen
@@ -31,6 +40,11 @@ export default function TabLayout() {
         options={{
           title: 'Home',
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+          headerRight: () => (
+            <View style={{ marginRight: 16 }}>
+              <ThemeToggle />
+            </View>
+          ),
         }}
       />
     </Tabs>

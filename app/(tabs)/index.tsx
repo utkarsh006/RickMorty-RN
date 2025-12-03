@@ -2,15 +2,18 @@ import { CharacterCard } from '@/components/CharacterCard';
 import { fetchCharacters } from '@/services/rickAndMorty';
 import { Character } from '@/types/character';
 import { useRouter } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { ActivityIndicator, FlatList, Text, TouchableOpacity, View } from 'react-native';
-import { styles } from './index.styles';
+import { createStyles } from '@/styles/index.styles';
+import { useGlobalTheme } from '@/hooks/useGlobalTheme';
 
 export default function HomeScreen() {
   const [characters, setCharacters] = useState<Character[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [errorMessage, setErrorMessage] = useState<string>('');
   const router = useRouter();
+  const { isDark } = useGlobalTheme();
+  const styles = useMemo(() => createStyles(isDark), [isDark]);
 
   useEffect(() => {
     let isMounted = true;

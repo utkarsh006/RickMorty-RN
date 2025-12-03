@@ -3,9 +3,10 @@ import { fetchCharacterById, fetchEpisodesByUrls } from '@/services/rickAndMorty
 import { Character, Episode } from '@/types/character';
 import { Image } from 'expo-image';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { ActivityIndicator, FlatList, Pressable, Text, View } from 'react-native';
-import { styles } from './[id].styles';
+import { createStyles } from '@/styles/character-detail.styles';
+import { useGlobalTheme } from '@/hooks/useGlobalTheme';
 
 export default function CharacterDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -14,6 +15,8 @@ export default function CharacterDetailScreen() {
   const [episodes, setEpisodes] = useState<Episode[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [errorMessage, setErrorMessage] = useState<string>('');
+  const { isDark } = useGlobalTheme();
+  const styles = useMemo(() => createStyles(isDark), [isDark]);
 
   useEffect(() => {
     let isMounted = true;
