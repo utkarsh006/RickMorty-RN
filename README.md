@@ -1,5 +1,6 @@
 - This is a simple React Native project built for learning purposes.
 - It displays a list of items, and tapping on any item navigates the user to a dedicated detail screen.
+- Run this project at node version 18, and upgrade expo to the latest version.
 
 <details><summary><h3> Demo Video </h3></summary>
 
