@@ -2,18 +2,18 @@ import { CharacterCard } from '@/components/CharacterCard';
 import { fetchCharacters } from '@/services/rickAndMorty';
 import { Character } from '@/types/character';
 import { useRouter } from 'expo-router';
-import { useEffect, useState, useMemo } from 'react';
-import { ActivityIndicator, FlatList, Text, TouchableOpacity, View } from 'react-native';
-import { createStyles } from '@/styles/index.styles';
-import { useGlobalTheme } from '@/hooks/useGlobalTheme';
+import { useEffect, useState } from 'react';
+import { ActivityIndicator, FlatList, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
+import { useColorScheme } from '@/hooks/useColorScheme';
+import { Colors } from '@/constants/Colors';
 
 export default function HomeScreen() {
   const [characters, setCharacters] = useState<Character[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [errorMessage, setErrorMessage] = useState<string>('');
   const router = useRouter();
-  const { isDark } = useGlobalTheme();
-  const styles = useMemo(() => createStyles(isDark), [isDark]);
+  const colorScheme = useColorScheme();
+  const colors = Colors[colorScheme ?? 'light'];
 
   useEffect(() => {
     let isMounted = true;
@@ -36,14 +36,14 @@ export default function HomeScreen() {
   }, []);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       {isLoading ? (
         <View style={styles.loader}>
           <ActivityIndicator size="large" />
-          <Text style={styles.loaderText}>Loading characters...</Text>
+          <Text style={[styles.loaderText, { color: colors.secondaryText }]}>Loading characters...</Text>
         </View>
       ) : errorMessage ? (
-        <Text style={styles.errorText}>{errorMessage}</Text>
+        <Text style={[styles.errorText, { color: colors.error }]}>{errorMessage}</Text>
       ) : (
         <FlatList
           data={characters}
@@ -62,3 +62,21 @@ export default function HomeScreen() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  loader: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loaderText: {
+    marginTop: 8,
+  },
+  errorText: {
+    textAlign: 'center',
+    marginTop: 20,
+  },
+});

@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Platform, View } from 'react-native';
 
 import { HapticTab } from '@/components/HapticTab';
@@ -7,11 +7,11 @@ import { IconSymbol } from '@/components/ui/IconSymbol';
 import TabBarBackground from '@/components/ui/TabBarBackground';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { Colors } from '@/constants/Colors';
-import { useGlobalTheme } from '@/hooks/useGlobalTheme';
+import { useColorScheme } from '@/hooks/useColorScheme';
 
 export default function TabLayout() {
-  const { isDark } = useGlobalTheme();
-  const colors = useMemo(() => isDark ? Colors.dark : Colors.light, [isDark]);
+  const colorScheme = useColorScheme();
+  const colors = Colors[colorScheme ?? 'light'];
 
   return (
     <Tabs
@@ -29,10 +29,7 @@ export default function TabLayout() {
           ios: {
             position: 'absolute',
           },
-          default: {
-            backgroundColor: colors.background,
-            borderTopColor: colors.border,
-          },
+          default: {},
         }),
       }}>
       <Tabs.Screen
